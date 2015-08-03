@@ -6,6 +6,7 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
     this.$toyDetail = this.$el.find('.toy-detail');
 
     this.pokemon = new Pokedex.Collections.Pokemon();
+    this.$pokeList.on("click", "li.poke-list-item", this.selectPokemonFromList.bind(this));
   },
 
 
@@ -15,6 +16,7 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
     var type = pokemon.get('poke_type');
     $pokemon = ($("<li>"))
           .addClass("poke-list-item")
+          .data("id", pokemon.id)
           .text("Name: " + name + ", Type: " + type);
     this.$pokeList.append($pokemon);
   },
@@ -43,8 +45,10 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
     this.$pokeDetail.append($detail);
   },
 
-  selectPokemonFromList: function() {
-
+  selectPokemonFromList: function(event) {
+    var id = $(event.currentTarget).data("id");
+    var pokemon = this.pokemon.where({id: id})[0];
+    this.renderPokemonDetail(pokemon);
   }
 
 });
