@@ -7,7 +7,7 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
 
     this.pokemon = new Pokedex.Collections.Pokemon();
     this.$pokeList.on("click", "li.poke-list-item", this.selectPokemonFromList.bind(this));
-    $("form.new-pokemon").on("submit", this.submitPokemonForm.bind(this));
+    this.$newPoke.on("submit", this.submitPokemonForm.bind(this));
   },
 
 
@@ -35,31 +35,32 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
 
   renderPokemonDetail: function(pokemon) {
     var view = this;
-    var $detail = ($("<div>")).addClass("detail");
+    var $detail = $("<div>").addClass("detail");
     var $img = $('<img src="' + pokemon.get('image_url') + '">');
     $detail.append($img);
-    _.each(pokemon.keys(), function(attr){
+
+    for(var attr in pokemon.attributes) {
       if(attr !== "image_url") {
         $detail.append(($("<p>").text(attr + ': ' + pokemon.get(attr))));
       }
-    });
-    this.$pokeDetail.append($detail);
+    };
+    this.$pokeDetail.html($detail);
   },
 
   selectPokemonFromList: function(event) {
     var id = $(event.currentTarget).data("id");
-    var pokemon = this.pokemon.where({id: id})[0];
+    var pokemon = this.pokemon.get(id);
     this.renderPokemonDetail(pokemon);
   },
 
-  createPokemon: function(attributes) {
+  createPokemon: function(attributes, callback) {
     var poke = new Pokedex.Models.Pokemon(attributes);
     var view = this;
-    debugger;
     poke.save({}, {
       success: function() {
         view.pokemon.add(poke)
         view.addPokemonToList(poke);
+        callback(poke);
       },
       error: function() {
         debugger;
@@ -70,7 +71,7 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
   submitPokemonForm: function(event) {
     event.preventDefault();
     var formContents = $(event.target).serializeJSON();
-    this.createPokemon(formContents);
+    this.createPokemon(formContents, this.renderPokemonDetail.bind(this));
   }
 
 });
