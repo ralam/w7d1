@@ -6,5 +6,45 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
     this.$toyDetail = this.$el.find('.toy-detail');
 
     this.pokemon = new Pokedex.Collections.Pokemon();
+  },
+
+
+  addPokemonToList: function (pokemon) {
+
+    var name = pokemon.get('name');
+    var type = pokemon.get('poke_type');
+    $pokemon = ($("<li>"))
+          .addClass("poke-list-item")
+          .text("Name: " + name + ", Type: " + type);
+    this.$pokeList.append($pokemon);
+  },
+
+  refreshPokemon: function () {
+    var view = this;
+    this.pokemon.fetch({
+      success: function () {
+        view.pokemon.each(function(el) {
+          view.addPokemonToList.call(view, el);
+        });
+      }
+    });
+  },
+
+  renderPokemonDetail: function(pokemon) {
+    var view = this;
+    var $detail = ($("<div>")).addClass("detail");
+    var $img = $('<img src="' + pokemon.get('image_url') + '">');
+    $detail.append($img);
+    _.each(pokemon.keys(), function(attr){
+      if(attr !== "image_url") {
+        $detail.append(($("<p>").text(attr + ': ' + pokemon.get(attr))));
+      }
+    });
+    this.$pokeDetail.append($detail);
+  },
+
+  selectPokemonFromList: function() {
+
   }
+
 });

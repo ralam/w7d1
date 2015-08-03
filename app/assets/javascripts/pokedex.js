@@ -7,6 +7,7 @@ window.Pokedex = {
     Pokedex.pokemonTypes = pokemonTypes;
     var $el = $('#pokedex');
     var view = new Pokedex.Views.Pokemon({ el: $el });
+    view.refreshPokemon();
   }
 };
 
