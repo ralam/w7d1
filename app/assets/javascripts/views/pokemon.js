@@ -8,6 +8,7 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
     this.pokemon = new Pokedex.Collections.Pokemon();
     this.$pokeList.on("click", "li.poke-list-item", this.selectPokemonFromList.bind(this));
     this.$newPoke.on("submit", this.submitPokemonForm.bind(this));
+    this.$pokeDetail.on("click", "li.toy-list-item", this.selectToyFromList.bind(this));
   },
 
   addPokemonToList: function (pokemon) {
@@ -86,8 +87,12 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
   },
 
   addToyToList: function(toy) {
-    var $toyItem = $("<li>").addClass("toy-list-item")
+    var $toyItem = $("<li>")
+      .addClass("toy-list-item")
+      .data("toy-id", toy.id)
+      .data("pokemon-id", toy.get("pokemon_id"))
 
+      // debugger;
     for(var attr in toy.attributes) {
       if(attr !== "image_url") {
         $toyItem.append(attr + ': ' + toy.get(attr) + "\n");
@@ -95,6 +100,25 @@ Pokedex.Views.Pokemon = Backbone.View.extend({
     };
 
     $("ul.toys").append($toyItem);
+  },
+
+  renderToyDetail: function(toy) {
+    var $toyDiv = $("<div>").addClass('detail');
+    var $img = $('<img src="' + toy.get('image_url') + '">');
+    $toyDiv.append($img);
+
+    this.$toyDetail.html($toyDiv)
+  },
+
+  selectToyFromList: function(event) {
+    var $toyItem = $(event.currentTarget)
+    var toyId = $toyItem.data("toy-id");
+    var pokemonId = $toyItem.data("pokemon-id");
+    var pokemon = this.pokemon.get(pokemonId);
+    var toys = pokemon.toys();
+    var toy = toys.get(toyId);
+
+    this.renderToyDetail(toy);
   }
 
 });
