@@ -15,6 +15,4 @@ Pokedex.Models.Pokemon = Backbone.Model.extend ({
     }
     return payload;
   }
-
-
 })
